@@ -1,0 +1,144 @@
+
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+{% load static %}
+<link href="{% static "/bootstrap/css/bootstrap.css" %}" rel="stylesheet">
+<script src="{% static "/bootstrap/js/bootstrap.js" %}"></script>
+
+<script type='text/javascript'>
+    $(document).ready(function(){
+
+      $( ".taskrow" ).each(function(index) {
+          $(this).on("click", function(){
+              var t_id = $(this).attr('value'); 
+
+              $.ajax({
+                type: 'POST',
+                url: 'get_articles/',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: {
+                  id_task: t_id,
+                  // csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function(data){
+                  // alert(data)
+
+                  $("#arts_table_cls").remove();
+                  $("#arts_lable").css('visibility', 'hidden');
+                  $("#arts_lable").css( "fontSize", "20px" );
+
+                  articles = JSON.parse(data);
+                  if(articles.length == 0){
+
+                    $("#arts_lable").text("В выбранном задании нет товарных позиций")
+                    $("#arts_lable").css('visibility', 'visible');
+
+                  } else {
+
+                    $("#arts_lable").css('visibility', 'hidden');
+
+                    var artTableDiv = document.getElementById("main_content");
+                  var table = document.createElement('TABLE');
+                  table.setAttribute("id", "arts_table_cls");
+                  table.setAttribute("class", "table table-bordered");
+                  table.border='1';
+
+                  var tableBody = document.createElement('TBODY');
+                  table.appendChild(tableBody);
+
+                  var tr = document.createElement('TR');
+                  tr.setAttribute("class", "taskrow")
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Наименование товара"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Конкурент"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Цена"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Группа"));
+                  tr.appendChild(td);
+
+                  tableBody.appendChild(tr);
+
+                  for (var i = 0; i < articles.length; ++i){
+                    var tr = document.createElement('TR');
+                    tr.setAttribute("class", "taskrow")
+                    tableBody.appendChild(tr);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].name));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].competitor));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].price));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].group));
+                    tr.appendChild(td);
+
+                  }
+                  artTableDiv.appendChild(table);
+
+                }
+
+                  
+
+                },
+                error: function(ts) { 
+                        alert("Ошибка выполнения запроса.");
+                }
+
+              })
+
+          });
+      });
+
+      $( ".taskrow" ).on( "mouseover", function() {
+          $( this ).css( "color", "red" );
+      });
+      $( ".taskrow" ).on( "mouseout", function() {
+          $( this ).css( "color", "black" );
+      });
+
+    });
+</script>
+
+<div id="main_content">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Название задания</th>
+        <th>Дата начала</th>
+        <th>Дата окончания</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        <tr class="taskrow" value={{ item.pk }}>
+          <td>{{ item.name }}</td>
+          <td>{{ item.begin_date }}</td>
+          <td>{{ item.end_date }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div id="arts_lable">
+  <h2>Выберите задание для загрузки товарных позиций</h2>
+  </div>
+
+</div>
