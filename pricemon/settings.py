@@ -39,7 +39,7 @@ SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/home/work/django/d3/pricemon/templates/', "os.path.join(SETTINGS_PATH, 'templates')", '/home/dmitry/work/django/d3/pricemon/templates/',],
+        'DIRS': ['/home/work/django/d3/pricemon/templates/', "os.path.join(SETTINGS_PATH, 'templates')", '/home/dmitry/work/django/d3/pricemon/templates/','/home/dmitry/work/django/git/pmon/templates/',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,6 +86,7 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     '/home/work/django/d3/pricemon/static/',
     '/home/dmitry/work/django/d3/pricemon/static/',
+    '/home/dmitry/work/django/git/pmon/static',
 )
 
 
