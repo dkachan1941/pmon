@@ -28,7 +28,7 @@ class MobileDeviceAdmin(admin.ModelAdmin):
     ]
 
 class ArticleAdmin(admin.ModelAdmin):
-    readonly_fields=('price','photo_path',)
+    readonly_fields=('price','photo_path','latitude', 'longitude', 'is_action',)
 
 
 admin.site.register(Task,TaskAdmin)

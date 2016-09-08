@@ -2,12 +2,18 @@
 
 from django.db import models
 
+TASKTYPE_CHOICES = (
+    ("m", 'Мониторинг цен'),
+    ("site", 'Мониторинг сайтов'))
+
 class MobileDevice(models.Model):
 	name = models.CharField(max_length=250)
-	password = models.CharField(max_length=250)
-	uuid = models.CharField(max_length=250)
-	phone_number = models.CharField(max_length=250, blank=True)
+	password = models.CharField(max_length=50)
+	uuid = models.CharField(max_length=100)
+	phone_number = models.CharField(max_length=50, blank=True)
 	change_password = models.BooleanField()
+	key = models.CharField(max_length=250, blank=True, null=True)
+
 
 	def __str__(self):
 		return '%s' % (self.name.encode('utf-8'))
@@ -22,10 +28,12 @@ class MobileDevice(models.Model):
 class Task(models.Model):
 	mobileDevice = models.ForeignKey(MobileDevice, on_delete=models.CASCADE, blank=True, null=True)
 	name = models.CharField(max_length=250)
-	begin_date = models.DateField(blank=True, null=True)
-	end_date = models.DateField(blank=True, null=True)
+	begin_date = models.DateField()
+	end_date = models.DateField()
 	in_work = models.BooleanField()
-	completedate = models.CharField(max_length=250, blank=True, null=True)
+	completedate = models.CharField(max_length=25, blank=True, null=True)
+	tasktype = models.CharField(max_length=50, choices=TASKTYPE_CHOICES)
+	status = models.IntegerField(max_length=10, blank=True, null=True)
 
 	def __str__(self):
 		return '%s' % (self.name.encode('utf-8'))
@@ -76,6 +84,10 @@ class Article(models.Model):
 	unit = models.CharField(max_length=250, blank=True, null=True)
 	takephoto = models.NullBooleanField()
 	photo_path = models.CharField(max_length=250, blank=True)
+	latitude = models.CharField(max_length=250, blank=True, null=True)
+	longitude = models.CharField(max_length=250, blank=True, null=True)
+	is_action = models.CharField(max_length=250, blank=True, null=True)
+
 
 	def __str__(self):
 		return '%s' % (self.name.encode('utf-8'))
