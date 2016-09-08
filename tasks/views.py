@@ -213,8 +213,7 @@ def set_tasks_mobile(request):
 				qs.save()
 			except:
 				return HttpResponse(str(dict({"error": "Error while sending the task"})), 'application/javascript')
-		
-		explore.stop()
+
 		qs = Task.objects.get(id=p_id_task)
 		qs.status = 1
 		qs.save
@@ -232,6 +231,28 @@ def set_tasks_mobile(request):
 	        #     add_p = []
 	        # log.error(add_p)
 	        # sendAddParams(add_p, cur, p_id_taskart, p_id_task, imei)
+
+
+
+# @bpappsrv.route('/getaddparams', methods=['POST'])
+# def getAdditionalParams():
+#     log.info("The getAdditionalParams method in appserv have triggered")
+#     # import explore
+#     # explore.stop()
+#     data = request.form
+#     if not data:
+#         return json.dumps({"error": "no addparams"})
+#     if data.get('param') != 'GetAddParams' or not data.get('key'):
+#         return json.dumps({'error' : 'No GetAddParams or key.'})
+
+#     try:
+#         additional_params = getAddParams(data.get('key'))
+#         return json.dumps(additional_params)
+#     except:
+#         log.error('Error in GetAddParams.')
+#         log.error(traceback.format_exc())
+#         return json.dumps({'error' : 'Error in GetAddParams.'})
+
 
 
 # def getAddParams(imei):
@@ -274,3 +295,174 @@ def set_tasks_mobile(request):
 # 		return HttpResponse(str(dict({"error": "not authorized"})), 'application/javascript')
 # 	else:
 # 		return HttpResponse(str(dict({"error": "Wrong request"})), 'application/javascript')
+
+
+
+# def changepw():
+#     log.info("The changepw method in appserv have triggered")
+#     data = request.form
+#     if not data:
+#         return json.dumps({"error": "no data in changepw"})
+    
+#     if data.get('param') == 'ChangePw':
+#         old_pw = data.get('pw_old')
+#         new_pw = data.get('pw_new')
+#         user = data.get('user')
+
+#         con = model.db.connect()
+#         cur = con.cursor()
+#         pwSQL = """
+#             Select cast(u.hashvalue as varchar2(32)) as pw
+#             from CPMS.mobile_device u
+#             where u.imei = hextoraw( :user)
+#         """
+#         res = cur.execute(pwSQL, {'user': user.decode('utf-8').encode('cp1251')})
+#         old_password = '' if not len(res) else res[0]['pw']
+#         if not old_password:
+#             return json.dumps({"error": "You are not authorized"})
+
+#         if old_password == old_pw:
+#             res = cur.execute(sqls.changePwSql, {'new_pw': new_pw, 'user': user}, commit = True)
+#             if not res:
+#                 log.info("The user %s has changed password!" % user)
+#                 return json.dumps({'success': 'true'})
+#             else:
+#                 log.info("The user %s tryed to change pw, but has no success, res: %s!" % (user, res))
+#                 return json.dumps({'success': 'false'})
+#         else:
+#             return json.dumps({'error': 'wrong old password!'})
+#     return json.dumps({'error' : 'Invalid user or password.'})
+
+
+
+# def isAuthorized(context):
+#     if hasattr(context.request.META.POST, 'read'):
+#         data = json.loads(context.request.META.POST.read())
+#     else:
+#         data = context.request.META.POST
+#         if hasattr(data, '__getitem__'):
+#             if data.get('key'):
+#                 key = data['key']
+#                 # if key == 'CC6F3902140BCF40':
+#                 #     data['user'] = key
+#                 #     return data
+#                 now = datetime.datetime.now()
+#                 conn = sqlite3.connect(tango.SETTINGS.SQLITEDBPATH)
+#                 cur = conn.cursor()
+#                 mkeys = cur.execute('SELECT key, date_1, user FROM keys').fetchall()
+#                 for u in mkeys:
+#                     if key == u[0] and (now - datetime.datetime.strptime(u[1][0:19], '%Y-%m-%d %H:%M:%S')).seconds < tango.SETTINGS.SESSION_TIME:
+#                         #если авторизация успешная, то продлим сессию
+#                         cur.execute('UPDATE keys SET date_1 = ? WHERE key = ?', (now ,key))
+#                         data['user'] = u[2]
+#                         if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                             log.info('The user %s has required for a %s method' % (u[2], data.get('param')))
+#                         conn.commit()
+#                         conn.close()
+#                         return data
+#                 conn.commit()
+#                 conn.close()
+#             elif 'pw' in data:
+#                 return data
+#             elif data.get('param') == 'ChangePw':
+#                 return data
+#         return False
+
+
+# def login(context):
+#     try:
+#         data = isAuthorized(context)
+#         if data:
+#             if hasattr(data, '__getitem__'):
+#                 if data.get('param'):
+#                     param = data['param']
+#                     if tango.SETTINGS.LOGGING == 'max':
+#                         log.info('The user %s has required for a %s method' % (data.get('user'), param))
+#                     if param == 'Login':
+#                         return check_login(data.get('user'), data.get('pw')) # вызываем процедуру логирования
+#                     if param == 'ChangePw':
+#                         return change_pw(data['user'], data['oldPw'], data['newPw']) # вызываем процедуру смены пароля
+#             if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                 log.info('invalid request, data = %s' % data)
+#             return str(dict({'error' : 'Invalid request. '}))
+#         return str(dict({"error": "not authorized"}))
+#     except IOError as e:
+#         if e.errno == errno.EPIPE:
+#             if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                 log.info('connection failed, error = %s' % str(e))
+#             return str(dict({"error": "connection failed!"}))
+
+
+# def check_login(user_in, pw_in): # возвращает ключ если пароль и логин правильные
+#     if user_in and pw_in:
+#         # explore.stop()
+#         data = urllib.urlencode({'user': user_in, 'pw': pw_in})
+#         try:
+#             request = urllib2.Request(tango.SETTINGS.LOGINPATH, data)
+#             response = urllib2.urlopen(request)
+#             is_user_valid = int(response.read())
+#             # print is_user_valid
+#         except Exception as e:
+#             if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                 log.info('check_login: DMZ Network error = %s' % str(e))
+#             return str(dict({'error' : 'check_login: DMZ Network error. '}))
+
+#         if is_user_valid:
+#             key = str(uuid.uuid1())
+#             conn = sqlite3.connect(tango.SETTINGS.SQLITEDBPATH)
+#             cur = conn.cursor()
+#             cur.execute('''CREATE TABLE if not exists keys (date_1 text, key text, user text)''')
+#             now = datetime.datetime.now()
+
+#             is_key_exists = cur.execute("SELECT 1 FROM keys WHERE user = ?", (user_in, )).fetchall()
+#             if is_key_exists:
+#                 cur.execute('UPDATE keys SET key = ?, date_1 = ? WHERE user = ?', (key, now, user_in))
+#             else:
+#                 cur.execute("INSERT INTO keys (date_1, key, user) VALUES (?,?,?)", (now, key, user_in))
+#             conn.commit()
+#             conn.close()
+
+#             if tango.SETTINGS.LOGGING == 'max':
+#                 log.info('The user %s got key = %s' % (user_in, key))
+#             print str(dict({'key' : key}))
+#             return str(dict({'key' : key}))
+#         else:
+#             # print str(dict({'error' : 'Invalid user or password. '}))
+#             return str(dict({'error' : 'Invalid user or password. '}))
+#     return str(dict({"error": "not authorized"}))
+
+
+# def sendManifest(context):
+#     if hasattr(context.request.META.POST, 'read'):
+#         data = json.loads(context.request.META.POST)
+#         if hasattr(data, '__getitem__'):
+#             if data.get('user') and data.get('pw'):
+#                 user = data['user']
+#                 pw = data['pw']
+#                 data = urllib.urlencode({'user': user, 'pw': pw})
+#     if context.request.META.POST["user"]:
+#         user = context.request.META.POST["user"]
+#         data = urllib.urlencode({'user': context.request.META.POST["user"], 'pw': context.request.META.POST["pw"]})
+#         try:
+#             request = urllib2.Request(tango.SETTINGS.LOGINPATH, data)
+#             response = urllib2.urlopen(request)
+#         except Exception as e:
+#             if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                 log.info('sendManifest: DMZ etwork error = %s' % str(e))
+#             return str(dict({'error' : 'sendManifest: DMZ Network error. '}))
+#         is_user_valid = int(response.read())
+#         if is_user_valid:
+#             try:
+#                 json_data = open(os.path.join(tango.PROJECT_ROOT, tango.SETTINGS.MANIFESTPATH)).read()
+#                 manifest = json.loads(json_data)
+#                 if tango.SETTINGS.LOGGING == 'max':
+#                     log.info('The user %s got manifest file' % user)
+#                 return json.dumps(manifest)
+#             except:
+#                 if tango.SETTINGS.LOGGING in ('max', 'min'):
+#                     log.error('The user %s got ERROR: no manifest file' % user)
+#                 return str(dict({'error' : 'No manifest file. '}))
+#         else:
+#             return str(dict({'error' : 'Invalid username or password'}))
+#     return str(dict({'error' : 'wrong request'}))
+
