@@ -32,7 +32,7 @@ def get_articles(request):
 		queryset = Article.objects.filter(task_id=id_task)
 		list = []
 		for row in queryset:
-		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': row.group.name})
+		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': row.group.name, 'unit': row.unit, 'photo': row.photo_path, 'quant': row.quant, 'latitude': row.latitude, 'longitude': row.longitude, 'is_action': row.is_action})
 		arts_list_json = json.dumps(list)
 		return HttpResponse(arts_list_json, 'application/javascript')
 	else:

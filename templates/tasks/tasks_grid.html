@@ -7,6 +7,16 @@
 <link href="{% static "/bootstrap/css/bootstrap.css" %}" rel="stylesheet">
 <script src="{% static "/bootstrap/js/bootstrap.js" %}"></script>
 
+<style type="text/css">
+.h-divider{
+ margin-top:5px;
+ margin-bottom:5px;
+ height:3px;
+ width:100%;
+ border-top:3px solid gray;
+}
+</style>
+
 <script type='text/javascript'>
     $(document).ready(function(){
 
@@ -26,18 +36,18 @@
                   // alert(data)
 
                   $("#arts_table_cls").remove();
-                  $("#arts_lable").css('visibility', 'hidden');
-                  $("#arts_lable").css( "fontSize", "20px" );
+                  // $("#arts_lable").css('visibility', 'hidden');
+                  // $("#arts_lable").css( "fontSize", "20px" );
 
                   articles = JSON.parse(data);
                   if(articles.length == 0){
 
-                    $("#arts_lable").text("В выбранном задании нет товарных позиций")
-                    $("#arts_lable").css('visibility', 'visible');
+                    // $("#arts_lable").text("В выбранном задании нет товарных позиций")
+                    // $("#arts_lable").css('visibility', 'visible');
 
                   } else {
 
-                    $("#arts_lable").css('visibility', 'hidden');
+                    // $("#arts_lable").css('visibility', 'hidden');
 
                     var artTableDiv = document.getElementById("main_content");
                   var table = document.createElement('TABLE');
@@ -49,7 +59,7 @@
                   table.appendChild(tableBody);
 
                   var tr = document.createElement('TR');
-                  tr.setAttribute("class", "taskrow")
+                  tr.setAttribute("class", "taskrow warning")
 
                   var td = document.createElement('TH');
                   td.appendChild(document.createTextNode("Наименование товара"));
@@ -65,6 +75,30 @@
 
                   var td = document.createElement('TH');
                   td.appendChild(document.createTextNode("Группа"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Фото"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Фасовка"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Ед. Изм."));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Широта"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Долгота"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Акция"));
                   tr.appendChild(td);
 
                   tableBody.appendChild(tr);
@@ -90,12 +124,33 @@
                     td.appendChild(document.createTextNode(articles[i].group));
                     tr.appendChild(td);
 
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].photo));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].unit));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].quant));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].latitude));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].longitude));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].is_action));
+                    tr.appendChild(td);
+
                   }
                   artTableDiv.appendChild(table);
-
                 }
-
-                  
 
                 },
                 error: function(ts) { 
@@ -108,37 +163,70 @@
       });
 
       $( ".taskrow" ).on( "mouseover", function() {
-          $( this ).css( "color", "red" );
+          $( this ).css( "color", "gray");
       });
       $( ".taskrow" ).on( "mouseout", function() {
           $( this ).css( "color", "black" );
       });
+      $('.taskrow').click(function(e) {
+		    $('.taskrow').removeClass('active');
+		    var $this = $(this);
+		    if (!$this.hasClass('active')) {
+		        $this.addClass('active');
+		    }
+		    e.preventDefault();
+		});
 
     });
 </script>
 
-<div id="main_content">
+<nav class="navbar navbar-default info">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Мониторинг цен</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Просмотр зданий</a></li>
+      <li><a href="/admin/" target="_parent">Администрирование</a></li>
+<!--       <li><a href="#">Page 2</a></li>
+      <li><a href="#">Page 3</a></li> -->
+    </ul>
+  </div>
+</nav>
+
+<div id="main_content" class="container-fluid">
   <table class="table table-bordered">
     <thead>
-      <tr>
-        <th>Название задания</th>
+      <tr class="info">
+        <th scope="row">Название задания</th>
         <th>Дата начала</th>
         <th>Дата окончания</th>
+        <th>Тип</th>
+        <th>Статус</th>
+        <th>Дата выполнения</th>
+        <th>В работе</th>
       </tr>
     </thead>
     <tbody>
       {% for item in items %}
-        <tr class="taskrow" value={{ item.pk }}>
+        <tr class="taskrow" value={{ item.pk }} >
           <td>{{ item.name }}</td>
           <td>{{ item.begin_date }}</td>
           <td>{{ item.end_date }}</td>
+          <td>{{ item.tasktype }}</td>
+          <td>{{ item.status }}</td>
+          <td>{{ item.completedate }}</td>
+          <td>{{ item.in_work }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 
-  <div id="arts_lable">
-  <h2>Выберите задание для загрузки товарных позиций</h2>
+  <div class="h-divider">
   </div>
+
+<!--   <div id="arts_lable">
+  <h2>Выберите задание для загрузки товарных позиций</h2>
+  </div> -->
 
 </div>
