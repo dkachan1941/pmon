@@ -101,6 +101,18 @@
                   td.appendChild(document.createTextNode("Акция"));
                   tr.appendChild(td);
 
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Производитель"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Вес"));
+                  tr.appendChild(td);
+
+                  var td = document.createElement('TH');
+                  td.appendChild(document.createTextNode("Качество"));
+                  tr.appendChild(td);
+
                   tableBody.appendChild(tr);
 
                   for (var i = 0; i < articles.length; ++i){
@@ -146,6 +158,18 @@
 
                     var td = document.createElement('TD');
                     td.appendChild(document.createTextNode(articles[i].is_action));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].manufacturer));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].weight));
+                    tr.appendChild(td);
+
+                    var td = document.createElement('TD');
+                    td.appendChild(document.createTextNode(articles[i].quality));
                     tr.appendChild(td);
 
                   }

@@ -32,7 +32,7 @@ def get_articles(request):
 		queryset = Article.objects.filter(task_id=id_task)
 		list = []
 		for row in queryset:
-		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': row.group.name, 'unit': row.unit, 'photo': row.photo_path, 'quant': row.quant, 'latitude': row.latitude, 'longitude': row.longitude, 'is_action': row.is_action})
+		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': row.group.name, 'unit': row.unit, 'photo': row.photo_path, 'quant': row.quant, 'latitude': row.latitude, 'longitude': row.longitude, 'is_action': row.is_action, 'manufacturer': row.manufacturer, 'quality': row.quality, 'weight': row.weight})
 		arts_list_json = json.dumps(list)
 		return HttpResponse(arts_list_json, 'application/javascript')
 	else:
@@ -180,6 +180,21 @@ def set_tasks_mobile(request):
 			except:
 				is_action = None
 
+			try:
+				manufacturer = item.get('manufacturer') or None
+			except:
+				manufacturer = None
+
+			try:
+				quality = item.get('quality') or None
+			except:
+				quality = None
+
+			try:
+				weight = item.get('weight') or None
+			except:
+				weight = None
+
 
 			#writing photo to storage
 			if len(item["photo"]) > 10:
@@ -207,8 +222,12 @@ def set_tasks_mobile(request):
 				qs.unit = id_unit
 				qs.price = p_price
 				qs.is_action = is_action
+				qs.quant = quant
 				qs.longitude = p_longitude
 				qs.latitude = p_latitude
+				qs.manufacturer = manufacturer
+				qs.quality = quality
+				qs.weight = weight
 				qs.task.completedate = cur_date_time
 				qs.save()
 			except:

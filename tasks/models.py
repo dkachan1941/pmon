@@ -87,7 +87,9 @@ class Article(models.Model):
 	latitude = models.CharField(max_length=250, blank=True, null=True)
 	longitude = models.CharField(max_length=250, blank=True, null=True)
 	is_action = models.CharField(max_length=250, blank=True, null=True)
-
+	manufacturer = models.CharField(max_length=250, blank=True, null=True)
+	quality = models.CharField(max_length=250, blank=True, null=True)
+	weight = models.CharField(max_length=250, blank=True, null=True)
 
 	def __str__(self):
 		return '%s' % (self.name.encode('utf-8'))
