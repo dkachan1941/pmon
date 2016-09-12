@@ -22,14 +22,80 @@
 
       $( ".taskrow" ).each(function(index) {
           $(this).on("click", function(){
-              var t_id = $(this).attr('value'); 
+              window.t_id = $(this).attr('value'); 
+              // alert($(this).find('.to_work_td').html());
+
+              if ($(this).find('.to_work_td').html() == "False"){
+                // if (!$(this).has('button')){
+                  $(this).find('.to_work_td').html("");
+                  var button = $("<button>Запустить</button>");
+                    button.click(function() {
+                      $(this).find('.to_work_td').on("click", function(){
+
+                        $.ajax({
+                          type: 'POST',
+                                url: 'run_spider/',
+                                // headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                                data: {id_task: window.t_id, project: "default", sp_name: "baucenter"},
+                                success: function(data){
+                                  $(this).find('.to_work_td').html("Запущено");
+                                  alert(JSON.stringify(data));
+                                },
+                                error: function(ts) { 
+                                      alert("Ошибка выполнения запроса.");
+                                }
+                      });
+
+                    });
+                    })
+                    $(this).find('.to_work_td').html($(this).find('.to_work_td').html().replace("False",""))
+
+                    button.appendTo($(this).find('.to_work_td'));
+                  // }
+                } else {
+                  $(this).find('.to_work_td').html("Запущено");
+                }
+
+              // }
+
+              // begin button 
+              // $( ".to_work_td" ).each(function(index) {
+              //   if ($(this).html() == "False"){
+
+              //     var button = $("<button>Запустить</button>");
+              //     button.click(function() {
+              //       $(this).on("click", function(){
+
+              //         $.ajax({
+              //           type: 'POST',
+              //                 url: 'run_spider/',
+              //                 // headers: {'X-CSRFToken': '{{ csrf_token }}'},
+              //                 data: {id_task: window.t_id, project: "default", sp_name: "baucenter"},
+              //           success: function(data){
+              //                   $(this).html("Запущено");
+              //                   alert(JSON.stringify(data));
+              //                 },
+              //           error: function(ts) { 
+              //                       alert("Ошибка выполнения запроса.");
+              //                 }
+              //       });
+
+              //     });
+              //     })
+              //     $(this).html($(this).html().replace("False",""))
+
+              //     button.appendTo($(this));
+              //   } else {
+              //     $(this).html("Запущено");
+              //   }
+              // });
 
               $.ajax({
                 type: 'POST',
                 url: 'get_articles/',
                 headers: {'X-CSRFToken': '{{ csrf_token }}'},
                 data: {
-                  id_task: t_id,
+                  id_task: window.t_id,
                   // csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
                 success: function(data){
@@ -49,7 +115,7 @@
 
                     // $("#arts_lable").css('visibility', 'hidden');
 
-                    var artTableDiv = document.getElementById("main_content");
+                  var artTableDiv = document.getElementById("main_content");
                   var table = document.createElement('TABLE');
                   table.setAttribute("id", "arts_table_cls");
                   table.setAttribute("class", "table table-bordered");
@@ -228,7 +294,7 @@
         <th>Тип</th>
         <th>Статус</th>
         <th>Дата выполнения</th>
-        <th>В работе</th>
+        <th>Состояние</th>
       </tr>
     </thead>
     <tbody>
@@ -240,7 +306,7 @@
           <td>{{ item.tasktype }}</td>
           <td>{{ item.status }}</td>
           <td>{{ item.completedate }}</td>
-          <td>{{ item.in_work }}</td>
+          <td class="to_work_td">{{ item.in_work }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -248,9 +314,5 @@
 
   <div class="h-divider">
   </div>
-
-<!--   <div id="arts_lable">
-  <h2>Выберите задание для загрузки товарных позиций</h2>
-  </div> -->
 
 </div>

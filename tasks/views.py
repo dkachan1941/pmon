@@ -17,6 +17,7 @@ import datetime
 import logging
 import base64
 import os
+from scrapyd_api import ScrapydAPI
 
 
 # log = logging.getLogger('default')
@@ -96,6 +97,18 @@ def login_mobile(request):
 		return HttpResponse(str(dict({"error": "not authorized"})), 'application/javascript')
 	else:
 		return HttpResponse(str(dict({"error": "Wrong request"})), 'application/javascript')
+
+@csrf_exempt
+def run_spider(request):
+	if request.method == 'POST':
+		id_task = request.POST['id_task']
+		sp_name = request.POST['sp_name'] # todo hash
+		scrapyd = ScrapydAPI('http://localhost:6800')
+		# explore.stop()
+		job_id = scrapyd.schedule('default', 'baucenter', id_task=id_task)
+		return HttpResponse(str(dict({"res": job_id})), 'application/javascript')
+	else:
+		return HttpResponse(str(dict({"error": "error"})), 'application/javascript')
 
 @csrf_exempt
 def set_tasks_mobile(request):
