@@ -23,72 +23,35 @@
       $( ".taskrow" ).each(function(index) {
           $(this).on("click", function(){
               window.t_id = $(this).attr('value'); 
-              // alert($(this).find('.to_work_td').html());
 
-              if ($(this).find('.to_work_td').html() == "False"){
-                // if (!$(this).has('button')){
-                  $(this).find('.to_work_td').html("");
+              var el = $(this).find('.to_work_td');
+
+              if (el.html() == "False"){
+                  el.html("");
                   var button = $("<button>Запустить</button>");
                     button.click(function() {
-                      $(this).find('.to_work_td').on("click", function(){
-
                         $.ajax({
                           type: 'POST',
                                 url: 'run_spider/',
+                                dataType: 'text json',
                                 // headers: {'X-CSRFToken': '{{ csrf_token }}'},
                                 data: {id_task: window.t_id, project: "default", sp_name: "baucenter"},
                                 success: function(data){
-                                  $(this).find('.to_work_td').html("Запущено");
-                                  alert(JSON.stringify(data));
+                                  el.html("Запущено");
+                                  alert(JSON.stringify("Отправлено в работу"));
+                                  // alert(JSON.stringify(data));
                                 },
                                 error: function(ts) { 
                                       alert("Ошибка выполнения запроса.");
                                 }
                       });
-
-                    });
                     })
                     $(this).find('.to_work_td').html($(this).find('.to_work_td').html().replace("False",""))
 
                     button.appendTo($(this).find('.to_work_td'));
-                  // }
-                } else {
+                } else if ($(this).find('.to_work_td').html() == "True") {
                   $(this).find('.to_work_td').html("Запущено");
                 }
-
-              // }
-
-              // begin button 
-              // $( ".to_work_td" ).each(function(index) {
-              //   if ($(this).html() == "False"){
-
-              //     var button = $("<button>Запустить</button>");
-              //     button.click(function() {
-              //       $(this).on("click", function(){
-
-              //         $.ajax({
-              //           type: 'POST',
-              //                 url: 'run_spider/',
-              //                 // headers: {'X-CSRFToken': '{{ csrf_token }}'},
-              //                 data: {id_task: window.t_id, project: "default", sp_name: "baucenter"},
-              //           success: function(data){
-              //                   $(this).html("Запущено");
-              //                   alert(JSON.stringify(data));
-              //                 },
-              //           error: function(ts) { 
-              //                       alert("Ошибка выполнения запроса.");
-              //                 }
-              //       });
-
-              //     });
-              //     })
-              //     $(this).html($(this).html().replace("False",""))
-
-              //     button.appendTo($(this));
-              //   } else {
-              //     $(this).html("Запущено");
-              //   }
-              // });
 
               $.ajax({
                 type: 'POST',

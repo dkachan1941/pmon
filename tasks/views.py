@@ -33,7 +33,7 @@ def get_articles(request):
 		queryset = Article.objects.filter(task_id=id_task)
 		list = []
 		for row in queryset:
-		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': row.group.name, 'unit': row.unit, 'photo': row.photo_path, 'quant': row.quant, 'latitude': row.latitude, 'longitude': row.longitude, 'is_action': row.is_action, 'manufacturer': row.manufacturer, 'quality': row.quality, 'weight': row.weight})
+		    list.append({'name':row.name, 'competitor': row.competitor.name, 'price': row.price, 'group': "" if not row.group else row.group.name, 'unit': row.unit, 'photo': row.photo_path, 'quant': row.quant, 'latitude': row.latitude, 'longitude': row.longitude, 'is_action': row.is_action, 'manufacturer': row.manufacturer, 'quality': row.quality, 'weight': row.weight})
 		arts_list_json = json.dumps(list)
 		return HttpResponse(arts_list_json, 'application/javascript')
 	else:
@@ -103,12 +103,18 @@ def run_spider(request):
 	if request.method == 'POST':
 		id_task = request.POST['id_task']
 		sp_name = request.POST['sp_name'] # todo hash
+
+		# explore.stop()
+		qs = Task.objects.get(id=id_task)
+		qs.in_work = True
+		qs.save()
+
 		scrapyd = ScrapydAPI('http://localhost:6800')
 		# explore.stop()
 		job_id = scrapyd.schedule('default', 'baucenter', id_task=id_task)
-		return HttpResponse(str(dict({"res": job_id})), 'application/javascript')
+		return HttpResponse(json.dumps({"res": job_id}), 'application/javascript')
 	else:
-		return HttpResponse(str(dict({"error": "error"})), 'application/javascript')
+		return HttpResponse(json.dumps({"error": "error"}), 'application/javascript')
 
 @csrf_exempt
 def set_tasks_mobile(request):
